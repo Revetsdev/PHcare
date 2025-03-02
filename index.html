@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHcare</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        .reels {
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            position: relative;
+            scroll-snap-type: y mandatory;
+            overflow-y: auto;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            scroll-behavior: smooth;
+        }
+        .reels::-webkit-scrollbar {
+            display: none;
+        }
+        .video-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            scroll-snap-align: start;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .navbar {
+            width: 100%;
+            max-width: 400px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: fixed;
+            bottom: 0;
+            z-index: 10;
+        }
+        .navbar button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            padding: 10px;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+        }
+        .navbar button:active {
+            opacity: 0.7;
+        }
+        .mute-button {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 20;
+        }
+        /* Loading Animation */
+        .loader {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 5px solid white;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="reels" id="reels"></div>
+    
+    <div class="navbar">
+        <button>Reels</button>
+        <button>Premium Reels</button>
+    </div>
+
+    <script>
+        const videoFiles = ["1.mp4", "2.mp4", "3.mp4", "4.mp4", "5.mp4"]; 
+        
+        const reelsContainer = document.getElementById("reels");
+
+        videoFiles.forEach((file, index) => {
+            let videoWrapper = document.createElement("div");
+            videoWrapper.classList.add("video-container");
+            
+            let videoElement = document.createElement("video");
+            videoElement.src = file;
+            videoElement.loop = true;
+            videoElement.muted = true;
+            videoElement.autoplay = true;
+            videoElement.playsInline = true;
+
+            let muteButton = document.createElement("button");
+            muteButton.innerText = "🔇";
+            muteButton.classList.add("mute-button");
+
+            // Loading Animation
+            let loader = document.createElement("div");
+            loader.classList.add("loader");
+
+            // Show loader when video is buffering
+            videoElement.addEventListener("waiting", () => {
+                loader.style.display = "block";
+            });
+
+            // Hide loader when video starts playing
+            videoElement.addEventListener("playing", () => {
+                loader.style.display = "none";
+            });
+
+            // Toggle mute/unmute on button click
+            muteButton.addEventListener("click", () => {
+                if (videoElement.muted) {
+                    videoElement.muted = false;
+                    muteButton.innerText = "🔊";
+                } else {
+                    videoElement.muted = true;
+                    muteButton.innerText = "🔇";
+                }
+            });
+
+            videoWrapper.appendChild(videoElement);
+            videoWrapper.appendChild(loader);
+            videoWrapper.appendChild(muteButton);
+            reelsContainer.appendChild(videoWrapper);
+        });
+
+        // Auto Pause & Play on Scroll
+        function handleScroll() {
+            const videos = document.querySelectorAll("video");
+            videos.forEach(video => {
+                const rect = video.getBoundingClientRect();
+                if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
+                    video.play();
+                } else {
+                    video.pause();
+                }
+            });
+        }
+
+        reelsContainer.addEventListener("scroll", handleScroll);
+    </script>
+</body>
+</html>
