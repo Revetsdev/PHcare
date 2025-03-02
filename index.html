@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PHcare</title>
+    <title>TikTok Clone</title>
     <style>
         * {
             margin: 0;
@@ -20,6 +20,47 @@
             overflow: hidden;
             position: relative;
         }
+        .top-navbar {
+            width: 100%;
+            max-width: 400px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            z-index: 15;
+            color: white;
+            padding: 0 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .menu-button {
+            font-size: 22px;
+            cursor: pointer;
+        }
+        .menu {
+            position: absolute;
+            top: 50px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            width: 150px;
+            border-radius: 5px;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0px 4px 8px rgba(255, 255, 255, 0.1);
+        }
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            display: block;
+            font-size: 14px;
+        }
+        .menu a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
         .reels {
             width: 100%;
             max-width: 400px;
@@ -30,6 +71,7 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
             scroll-behavior: smooth;
+            padding-top: 50px;
         }
         .reels::-webkit-scrollbar {
             display: none;
@@ -60,6 +102,11 @@
             bottom: 0;
             z-index: 10;
         }
+        .navbar .line {
+            width: 1px;
+            height: 60px;
+            background-color: #ccc;
+        }
         .navbar button {
             background: none;
             border: none;
@@ -69,6 +116,7 @@
             cursor: pointer;
             flex: 1;
             text-align: center;
+            font-weight: 550;
         }
         .navbar button:active {
             opacity: 0.7;
@@ -86,32 +134,33 @@
             cursor: pointer;
             z-index: 20;
         }
-        /* Loading Animation */
-        .loader {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 5px solid white;
-            animation: spin 1s linear infinite;
-            display: none;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
+    <div class="top-navbar">
+        <span>PHcare</span>
+        <span class="menu-button" onclick="toggleMenu()">☰</span>
+        <div class="menu" id="menu">
+            <a href="#">Profile</a>
+            <a href="#">Settings</a>
+            <a href="#">Logout</a>
+        </div>
+    </div>
+
     <div class="reels" id="reels"></div>
     
     <div class="navbar">
-        <button>Reels</button>
-        <button>Premium Reels</button>
+        <button>▶︎ Reels</button>
+        <div class="line"></div>
+        <button>🎞 Premium</button>
     </div>
 
     <script>
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.style.display = menu.style.display === "flex" ? "none" : "flex";
+        }
+
         const videoFiles = ["1.mp4", "2.mp4", "3.mp4", "4.mp4", "5.mp4"]; 
         
         const reelsContainer = document.getElementById("reels");
@@ -131,21 +180,6 @@
             muteButton.innerText = "🔇";
             muteButton.classList.add("mute-button");
 
-            // Loading Animation
-            let loader = document.createElement("div");
-            loader.classList.add("loader");
-
-            // Show loader when video is buffering
-            videoElement.addEventListener("waiting", () => {
-                loader.style.display = "block";
-            });
-
-            // Hide loader when video starts playing
-            videoElement.addEventListener("playing", () => {
-                loader.style.display = "none";
-            });
-
-            // Toggle mute/unmute on button click
             muteButton.addEventListener("click", () => {
                 if (videoElement.muted) {
                     videoElement.muted = false;
@@ -157,12 +191,10 @@
             });
 
             videoWrapper.appendChild(videoElement);
-            videoWrapper.appendChild(loader);
             videoWrapper.appendChild(muteButton);
             reelsContainer.appendChild(videoWrapper);
         });
 
-        // Auto Pause & Play on Scroll
         function handleScroll() {
             const videos = document.querySelectorAll("video");
             videos.forEach(video => {
